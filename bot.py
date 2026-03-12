@@ -9,7 +9,8 @@ BASE_URL = "https://link.ingress.com/agent/"
 
 
 def build_links(ids: List[str]) -> str:
-    return "\n".join(f"{BASE_URL}{agent_id}" for agent_id in ids)
+    # Telegram Markdown link without showing URL
+    return "\n".join(f"[{agent_id}]({BASE_URL}{agent_id})" for agent_id in ids)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -30,8 +31,11 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text("请至少发送一个 ID。")
         return
 
-    response = "为你生成的链接如下：\n" + build_links(ids)
-    await update.message.reply_text(response)
+    await update.message.reply_text(
+        build_links(ids),
+        parse_mode="Markdown",
+        disable_web_page_preview=True,
+    )
 
 
 def main() -> None:
